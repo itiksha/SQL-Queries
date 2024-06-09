@@ -30,25 +30,30 @@ INSERT INTO lift_passengers (passenger_name, weight_kg, lift_id) VALUES
 
 
 -- Que For each lift find the comma separated list of people who can be accomodated. The comma separated list should have people in the order of their weight in increasing order
-with Passengers as ( 
-select 
-l.id,
-lp.passenger_name,
-lp.weight_kg,
-l.capacity_kg,
-sum(lp.weight_kg) over(partition by l.id order by lp.weight_kg 
-rows between unbounded preceding and current row) as running_sum
-from lifts l 
-inner join lift_passengers lp on
-l.id = lp.lift_id
+-- Common Table Expression (CTE) named "Passengers"
+-- This CTE calculates the running sum of passenger weights for each lift
+WITH Passengers AS (
+    SELECT 
+        l.id,
+        lp.passenger_name,
+        lp.weight_kg,
+        l.capacity_kg,
+        -- Calculate the running sum of passenger weights within each lift partition
+        SUM(lp.weight_kg) OVER (PARTITION BY l.id ORDER BY lp.weight_kg ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_sum
+    FROM 
+        lifts l 
+    INNER JOIN 
+        lift_passengers lp ON l.id = lp.lift_id
 ) 
-
-select 
-id,
-Group_CONCAT(passenger_name,',') as passenger_list
-from 
-Passengers
-where 
-running_sum < capacity_kg 
-group by id
-;
+-- Main query to aggregate passenger names into a list for each lift
+SELECT 
+    id,
+    -- Concatenate passenger names into a comma-separated list
+    GROUP_CONCAT(passenger_name, ',') AS passenger_list
+FROM 
+    Passengers
+-- Filter lifts where the total weight of passengers does not exceed the lift's capacity
+WHERE 
+    running_sum < capacity_kg 
+GROUP BY 
+    id;
