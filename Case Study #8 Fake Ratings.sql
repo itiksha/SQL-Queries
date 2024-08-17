@@ -20,6 +20,8 @@ VALUES
 (9, 102, 1009, 3.8),
 (10, 102, 1010, 3.9);
 
+-- Find the rating for each product that is most different from the average rating for that product
+
 with RatingDifferences as (
   select rating_id,
   product_id,
