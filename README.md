@@ -17,7 +17,8 @@ Key Features:
 5. Real-World Scenarios: Queries designed for business use cases such as sales analysis, customer segmentation, and trend detection.
    
 Technologies Used
-SQL Dialects:
+
+SQL Dialects
 MySQL
 PostgreSQL
 SQL Server
